@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Text, View } from 'react-native';
-import { Button, Input, ButtonGroup } from '@rneui/themed'
+import { Button, Input, ButtonGroup } from '@rneui/themed';
 import Slider from '@react-native-community/slider';
-import { generatePrompt, fetchAIResponse, inputOptions, debugAlert } from '../lib/lib';
+import { generatePrompt, inputOptions } from '../lib/lib';
 import { dateInputPageStyle } from '../lib/styles';
 
 export function DateInputPage(props) {
@@ -12,6 +12,17 @@ export function DateInputPage(props) {
   const [datelength, setDateLength] = useState(0);
   const [budgetIndex, setBudgetIndex] = useState(0); 
   const [freeText, setFreeText] = useState('');
+
+  const handleSubmit = () => {
+    props.setPayload(generatePrompt({
+      location: location,
+      timeOfDay: inputOptions.timeOfDay[timeOfDayIndex],
+      datelength: datelength,
+      budget: inputOptions.budget[budgetIndex],
+      freeText: freeText 
+    }), false);
+    props.setParentPage('resultsPage');
+  };
 
   return (
     <View style={dateInputPageStyle.container}>
@@ -36,9 +47,9 @@ export function DateInputPage(props) {
       <Slider
         style={{width: 350, height: 40}}
         value={datelength}
-        minimumValue={0}
+        minimumValue={1}
         maximumValue={12}
-        step={0.5}
+        step={1}
         onValueChange={(newDateLength) => setDateLength(newDateLength)}
         minimumTrackTintColor="#000000"
         maximumTrackTintColor="#000000"
@@ -62,13 +73,7 @@ export function DateInputPage(props) {
       {/** Submit */}
       <Button
         title="Submit Form"
-        onPress={() => fetchAIResponse(generatePrompt({
-          location: location,
-          timeOfDay: inputOptions.timeOfDay[timeOfDayIndex],
-          datelength: datelength,
-          budget: inputOptions.budget[budgetIndex],
-          freeText: freeText 
-        }), false)}
+        onPress={() => handleSubmit()}
       />
 
       <StatusBar style="auto" />
